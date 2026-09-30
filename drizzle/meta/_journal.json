@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1790509308226,
+      "tag": "0000_condemned_squadron_sinister",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1790509459698,
+      "tag": "0001_hard_post",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1790510266725,
+      "tag": "0002_mysterious_mystique",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1790581974929,
+      "tag": "0003_ambitious_dark_beast",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1790586884237,
+      "tag": "0004_handy_galactus",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1790588205089,
+      "tag": "0005_lonely_sway",
+      "breakpoints": true
+    }
+  ]
+}

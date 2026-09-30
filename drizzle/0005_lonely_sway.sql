@@ -1,0 +1,1 @@
+ALTER TABLE `paypal_payout_batches` ADD `firstAttemptAt` timestamp;
