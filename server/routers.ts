@@ -39,6 +39,11 @@ import {
   saveSellerOrganization,
   trackAffiliateClick,
 } from "./db";
+import {
+  getAffiliateAnalytics,
+  getSellerAnalytics,
+  recordOfferImpression,
+} from "./analytics-db";
 
 const marketplaceRouter = router({
   list: publicProcedure
@@ -67,12 +72,29 @@ const marketplaceRouter = router({
         });
       }
     }),
+  trackOfferImpression: publicProcedure
+    .input(
+      z.object({
+        offerId: z.number().int().positive(),
+        eventKey: z.string().uuid(),
+      })
+    )
+    .mutation(({ input }) =>
+      recordOfferImpression(input.offerId, input.eventKey)
+    ),
 });
 
 const affiliateRouter = router({
   workspace: protectedProcedure.query(({ ctx }) =>
     getAffiliateWorkspace(ctx.user.id)
   ),
+  analytics: protectedProcedure
+    .input(
+      z.object({
+        days: z.union([z.literal(7), z.literal(30), z.literal(90)]).default(30),
+      })
+    )
+    .query(({ ctx, input }) => getAffiliateAnalytics(ctx.user.id, input.days)),
   saveProfile: protectedProcedure
     .input(
       z.object({
@@ -106,9 +128,14 @@ const affiliateRouter = router({
         await saveAffiliatePayPalRecipient(ctx.user.id, encryptedEmail);
         return { success: true, hasPayPalRecipient: true } as const;
       } catch (error) {
-        const message = error instanceof Error ? error.message : "Unable to save PayPal recipient";
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Unable to save PayPal recipient";
         throw new TRPCError({
-          code: message.includes("encryption is not configured") ? "PRECONDITION_FAILED" : "BAD_REQUEST",
+          code: message.includes("encryption is not configured")
+            ? "PRECONDITION_FAILED"
+            : "BAD_REQUEST",
           message: message.includes("encryption is not configured")
             ? "Secure PayPal recipient storage is not configured yet."
             : message,
@@ -122,7 +149,10 @@ const affiliateRouter = router({
     } catch (error) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: error instanceof Error ? error.message : "Unable to remove PayPal recipient",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Unable to remove PayPal recipient",
       });
     }
   }),
@@ -156,6 +186,13 @@ const sellerRouter = router({
   workspace: protectedProcedure.query(({ ctx }) =>
     getSellerWorkspace(ctx.user.id)
   ),
+  analytics: protectedProcedure
+    .input(
+      z.object({
+        days: z.union([z.literal(7), z.literal(30), z.literal(90)]).default(30),
+      })
+    )
+    .query(({ ctx, input }) => getSellerAnalytics(ctx.user.id, input.days)),
   register: protectedProcedure
     .input(
       z.object({
@@ -309,7 +346,10 @@ const networkRouter = router({
           .array(z.number().int().positive())
           .min(1)
           .max(1000)
-          .refine(ids => new Set(ids).size === ids.length, "Select each commission only once"),
+          .refine(
+            ids => new Set(ids).size === ids.length,
+            "Select each commission only once"
+          ),
       })
     )
     .mutation(({ ctx, input }) =>
@@ -325,7 +365,10 @@ const networkRouter = router({
     .input(
       z.object({
         batchId: z.number().int().positive(),
-        paypalBatchId: z.string().trim().regex(/^[A-Z0-9-]{8,64}$/),
+        paypalBatchId: z
+          .string()
+          .trim()
+          .regex(/^[A-Z0-9-]{8,64}$/),
       })
     )
     .mutation(({ input }) =>

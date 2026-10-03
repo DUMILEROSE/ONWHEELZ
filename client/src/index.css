@@ -3903,3 +3903,223 @@ main {
     grid-row: 1/3;
   }
 }
+
+.activity-panel {
+  display: grid;
+  gap: 22px;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid #e2e7e1;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(242, 105, 63, 0.07),
+      transparent 23rem
+    ),
+    #fff;
+}
+.activity-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 22px;
+}
+.activity-heading h2 {
+  margin: 13px 0 7px;
+  color: var(--wheel-ink);
+  font:
+    600 clamp(25px, 3vw, 34px) / 1.05 "Space Grotesk",
+    sans-serif;
+  letter-spacing: -0.055em;
+}
+.activity-heading h2 em {
+  color: var(--wheel-orange);
+  font-style: normal;
+}
+.activity-heading p {
+  margin: 0;
+  color: #697470;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.activity-window {
+  display: grid;
+  gap: 5px;
+  min-width: 148px;
+  color: #78827e;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.activity-window select {
+  min-height: 38px;
+  padding: 0 11px;
+  border: 1px solid #dfe5df;
+  border-radius: 4px;
+  color: var(--wheel-ink);
+  background: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.activity-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+}
+.activity-metric {
+  min-height: 132px;
+  padding: 15px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid #e9ece7;
+  border-radius: 4px;
+  background: #f8f9f6;
+}
+.activity-metric-accent {
+  border-color: rgba(242, 105, 63, 0.28);
+  background: #fff5f0;
+}
+.activity-metric-icon {
+  width: 29px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--wheel-orange-deep);
+  background: #fff;
+}
+.activity-metric-label {
+  margin-top: 14px;
+  color: #77817c;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.activity-metric strong {
+  margin-top: 5px;
+  color: var(--wheel-ink);
+  font:
+    600 clamp(18px, 2vw, 24px) / 1.1 "Space Grotesk",
+    sans-serif;
+  letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
+}
+.activity-metric small {
+  margin-top: 5px;
+  color: #818a85;
+  font-size: 9px;
+  line-height: 1.4;
+}
+.activity-detail-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  padding-top: 1px;
+}
+.activity-detail-heading h3 {
+  margin: 7px 0 0;
+  color: var(--wheel-ink);
+  font:
+    600 18px/1.15 "Space Grotesk",
+    sans-serif;
+  letter-spacing: -0.035em;
+}
+.activity-detail-heading > span {
+  color: #808985;
+  font-size: 10px;
+}
+.activity-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e7ebe5;
+  border-radius: 4px;
+  background: #fff;
+}
+.activity-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  text-align: left;
+}
+.activity-table th {
+  padding: 11px 14px;
+  color: #7b8580;
+  background: #f6f7f3;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+.activity-table td {
+  padding: 12px 14px;
+  border-top: 1px solid #edf0eb;
+  color: #3c4844;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.activity-table tbody tr:hover {
+  background: #fbfcf9;
+}
+.activity-table td:first-child {
+  min-width: 180px;
+  white-space: normal;
+}
+.activity-table td:first-child strong,
+.activity-table td:first-child span {
+  display: block;
+}
+.activity-table td:first-child strong {
+  color: var(--wheel-ink);
+  font-size: 11px;
+}
+.activity-table td:first-child span {
+  margin-top: 4px;
+  color: #7d8782;
+  font-size: 9px;
+  text-transform: capitalize;
+}
+.activity-definition {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 13px;
+  border-left: 2px solid var(--wheel-orange);
+  color: #69736e;
+  background: #f6f7f3;
+}
+.activity-definition svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--wheel-orange-deep);
+}
+.activity-definition p {
+  margin: 0;
+  font-size: 9px;
+  line-height: 1.6;
+}
+@media (max-width: 900px) {
+  .activity-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .activity-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .activity-window {
+    width: 100%;
+  }
+  .activity-metric {
+    min-height: 120px;
+    padding: 12px;
+  }
+  .activity-metric-label {
+    font-size: 7px;
+  }
+  .activity-table th,
+  .activity-table td {
+    padding: 10px;
+  }
+}

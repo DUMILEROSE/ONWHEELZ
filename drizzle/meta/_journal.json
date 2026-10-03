@@ -43,6 +43,13 @@
       "when": 1790588205089,
       "tag": "0005_lonely_sway",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1790756819758,
+      "tag": "0006_natural_boom_boom",
+      "breakpoints": true
     }
   ]
 }

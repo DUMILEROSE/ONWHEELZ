@@ -7,6 +7,7 @@
 - Public mobility marketplace, category photography/lookbook, and worldwide/region filtering.
 - Seller and affiliate onboarding, product offers, affiliate applications, seller decisions, and internal profile review.
 - Referral redirects, persistent click events, and a privacy-minimal paid-order webhook for seller systems.
+- Seller and affiliate performance dashboards with 7-, 30-, and 90-day views, offer visibility, tracked clicks, and conversion status.
 - Seller-reviewed commission records and an admin payout desk integrated with **PayPal Payouts**.
 - Encrypted PayPal recipient email storage, exact-cent batch accounting, idempotent batch IDs, explicit admin confirmation, status refresh, PayPal webhook verification, and an audit ledger.
 
@@ -58,11 +59,17 @@ Never place live credentials or the encryption key in client code, Git, a commit
 
 See [`docs/paypal-payouts.md`](docs/paypal-payouts.md) for the operating runbook, and [`research-provider-webhooks.md`](research-provider-webhooks.md) for the official-source comparison. The PayPal integration is implemented, but it remains unconfigured and disabled until the operator configures the server secrets and performs the required testing/review.
 
+This release supports **outgoing affiliate payouts only**. It does not accept vendor deposits, maintain vendor cash wallets, enable vendor withdrawals, or hold seller marketing budgets in escrow. PayPal Payouts is not an inbound funding or seller-wallet product. See [`docs/activity-analytics-and-funds-model.md`](docs/activity-analytics-and-funds-model.md) for the safe scope and future payment architecture options.
+
 ## Order-event webhooks
 
 Sellers can set up an ONWHEELZ-specific webhook from their seller workspace. It accepts only a minimal paid-order payload using a one-time per-seller key; the key is hashed in storage and rotation revokes the old key. Requests that include extra fields (especially customer data) are rejected. Ingested records stay pending until the seller reviews them; receiving an HTTP acknowledgement is not a payout or commission approval.
 
 See [`docs/order-webhook-integration.md`](docs/order-webhook-integration.md) for the exact payload and retry behavior. A Shopify store needs an adapter that verifies Shopify’s raw-body HMAC and maps its event into ONWHEELZ’s minimal payload; native Shopify signature verification is not included.
+
+## Activity analytics
+
+The seller studio and affiliate desk provide 7-, 30-, and 90-day performance summaries. Offer views are recorded when at least half of a catalog card is visible; affiliate clicks count tracked referral redirects; reported orders come from seller entry or the seller order webhook and remain pending until the seller reviews them. Confirmed sales include approved, batched, or paid conversion rows. These are counts of recorded events, not unique people or an independent guarantee that every visit/purchase was captured. View events store no visitor identity, IP address, or user-agent. Analytics are retained without automatic expiry. See [`docs/activity-analytics-and-funds-model.md`](docs/activity-analytics-and-funds-model.md) for metric definitions and funding boundaries.
 
 ## Project safety notes
 

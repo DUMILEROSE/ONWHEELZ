@@ -91,6 +91,28 @@ export const offers = mysqlTable(
   })
 );
 
+/** Offer-card visibility counts only; no visitor identity, IP, or user-agent data. */
+export const offerImpressions = mysqlTable(
+  "offer_impressions",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    offerId: int("offerId")
+      .notNull()
+      .references(() => offers.id, { onDelete: "cascade" }),
+    eventKey: varchar("eventKey", { length: 36 }).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => ({
+    eventKeyUnique: uniqueIndex("offer_impressions_event_uidx").on(
+      table.eventKey
+    ),
+    offerTime: index("offer_impressions_offer_time_idx").on(
+      table.offerId,
+      table.createdAt
+    ),
+  })
+);
+
 /** Affiliate identity, audience details, and internal platform verification status. */
 export const affiliateProfiles = mysqlTable(
   "affiliate_profiles",
@@ -172,7 +194,8 @@ export const affiliateClicks = mysqlTable(
   },
   table => ({
     applicationClicks: index("affiliate_clicks_application_idx").on(
-      table.applicationId
+      table.applicationId,
+      table.createdAt
     ),
   })
 );
@@ -223,6 +246,13 @@ export const affiliateConversions = mysqlTable(
       table.applicationId,
       table.status
     ),
+    sellerCreated: index("affiliate_conversions_seller_created_idx").on(
+      table.sellerId,
+      table.createdAt
+    ),
+    applicationCreated: index(
+      "affiliate_conversions_application_created_idx"
+    ).on(table.applicationId, table.createdAt),
   })
 );
 

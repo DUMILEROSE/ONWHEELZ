@@ -1,6 +1,8 @@
 import {
+  useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type FormEvent,
   type ReactNode,
@@ -17,6 +19,10 @@ import {
   NetworkVerificationDesk,
   SellerConversionPanel,
 } from "@/components/NetworkOpsPanels";
+import {
+  AffiliateAnalyticsPanel,
+  SellerAnalyticsPanel,
+} from "@/components/AnalyticsPanels";
 import { SellerWebhookPanel } from "@/components/SellerWebhookPanel";
 import { AffiliatePayPalSettingsPanel } from "@/components/AffiliatePayPalSettingsPanel";
 import { PayPalPayoutAdminPanel } from "@/components/PayPalPayoutAdminPanel";
@@ -188,12 +194,38 @@ function OfferArt({ offer }: { offer: MarketplaceOffer }) {
 function OfferCard({
   offer,
   onApply,
+  onImpression,
 }: {
   offer: MarketplaceOffer;
   onApply: (offer: MarketplaceOffer) => void;
+  onImpression: (offerId: number, eventKey: string) => void;
 }) {
+  const cardRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card || typeof IntersectionObserver === "undefined") return;
+    let recorded = false;
+    const observer = new IntersectionObserver(
+      entries => {
+        const visible = entries.some(
+          entry => entry.isIntersecting && entry.intersectionRatio >= 0.5
+        );
+        if (!visible || recorded) return;
+        const eventKey = globalThis.crypto?.randomUUID?.();
+        if (!eventKey) return;
+        recorded = true;
+        onImpression(offer.id, eventKey);
+        observer.disconnect();
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, [offer.id, onImpression]);
+
   return (
-    <article className="offer-card">
+    <article ref={cardRef} className="offer-card">
       <OfferArt offer={offer} />
       <div className="offer-card-body">
         <div className="offer-meta">
@@ -253,6 +285,7 @@ export default function Home() {
     "All"
   );
   const [search, setSearch] = useState("");
+  const [analyticsDays, setAnalyticsDays] = useState<7 | 30 | 90>(30);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [applicationOffer, setApplicationOffer] =
     useState<MarketplaceOffer | null>(null);
@@ -313,13 +346,33 @@ export default function Home() {
   const affiliateQuery = trpc.affiliate.workspace.useQuery(undefined, {
     enabled: isAuthenticated,
   });
+  const affiliateAnalyticsQuery = trpc.affiliate.analytics.useQuery(
+    { days: analyticsDays },
+    { enabled: isAuthenticated && view === "affiliate" }
+  );
   const sellerQuery = trpc.seller.workspace.useQuery(undefined, {
     enabled: isAuthenticated,
   });
+  const sellerAnalyticsQuery = trpc.seller.analytics.useQuery(
+    { days: analyticsDays },
+    {
+      enabled:
+        isAuthenticated &&
+        view === "seller" &&
+        Boolean(sellerQuery.data?.organization),
+    }
+  );
   const networkQuery = trpc.network.verificationQueue.useQuery(undefined, {
     enabled: isAuthenticated && user?.role === "admin",
   });
   const utils = trpc.useUtils();
+  const offerImpressionMutation =
+    trpc.marketplace.trackOfferImpression.useMutation();
+  const trackOfferImpression = useCallback(
+    (offerId: number, eventKey: string) =>
+      offerImpressionMutation.mutate({ offerId, eventKey }),
+    [offerImpressionMutation.mutate]
+  );
 
   const applyMutation = trpc.affiliate.requestToPromote.useMutation({
     onSuccess: async () => {
@@ -946,6 +999,7 @@ export default function Home() {
                       key={offer.id}
                       offer={offer}
                       onApply={openApplication}
+                      onImpression={trackOfferImpression}
                     />
                   ))}
                 </div>
@@ -1320,17 +1374,28 @@ export default function Home() {
             ) : (
               <section className="workspace-card paypal-recipient-card">
                 <div className="card-kicker">
-                  <span className="kicker-icon"><CircleDollarSign size={16} /></span>
+                  <span className="kicker-icon">
+                    <CircleDollarSign size={16} />
+                  </span>
                   <span>PAYPAL PAYOUT PREFERENCE</span>
                 </div>
                 <h2>Save your affiliate profile first.</h2>
-                <p>ONWHEELZ can store a PayPal recipient only after you have saved your affiliate channels and profile details.</p>
+                <p>
+                  ONWHEELZ can store a PayPal recipient only after you have
+                  saved your affiliate channels and profile details.
+                </p>
               </section>
             )}
             <AffiliateAttributionPanel
               applications={applications}
               conversions={affiliateConversions}
               onCopy={copyReferralLink}
+            />
+            <AffiliateAnalyticsPanel
+              data={affiliateAnalyticsQuery.data}
+              isLoading={affiliateAnalyticsQuery.isLoading}
+              days={analyticsDays}
+              onDaysChange={setAnalyticsDays}
             />
           </div>
         )}
@@ -1838,6 +1903,12 @@ export default function Home() {
         )}
         {view === "seller" && isAuthenticated && seller && (
           <div className="extension-panels-wrap seller-ledger-wrap">
+            <SellerAnalyticsPanel
+              data={sellerAnalyticsQuery.data}
+              isLoading={sellerAnalyticsQuery.isLoading}
+              days={analyticsDays}
+              onDaysChange={setAnalyticsDays}
+            />
             <SellerWebhookPanel
               sellerId={seller.id}
               applications={sellerApplications}
