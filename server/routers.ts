@@ -44,6 +44,10 @@ import {
   getSellerAnalytics,
   recordOfferImpression,
 } from "./analytics-db";
+import {
+  getSellerBudgetWorkspace,
+  saveSellerMonthlyBudgetPlan,
+} from "./budget-db";
 
 const marketplaceRouter = router({
   list: publicProcedure
@@ -193,6 +197,54 @@ const sellerRouter = router({
       })
     )
     .query(({ ctx, input }) => getSellerAnalytics(ctx.user.id, input.days)),
+  monthlyBudget: protectedProcedure
+    .input(
+      z.object({
+        month: z
+          .string()
+          .regex(/^\d{4}-(0[1-9]|1[0-2])$/)
+          .refine(month => {
+            const year = Number(month.slice(0, 4));
+            return year >= 2000 && year <= 2100;
+          }, "Budget month must be between 2000 and 2100"),
+      })
+    )
+    .query(({ ctx, input }) =>
+      getSellerBudgetWorkspace(ctx.user.id, input.month)
+    ),
+  saveMonthlyBudget: protectedProcedure
+    .input(
+      z.object({
+        month: z
+          .string()
+          .regex(/^\d{4}-(0[1-9]|1[0-2])$/)
+          .refine(month => {
+            const year = Number(month.slice(0, 4));
+            return year >= 2000 && year <= 2100;
+          }, "Budget month must be between 2000 and 2100"),
+        plannedAmount: z
+          .string()
+          .trim()
+          .regex(/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await saveSellerMonthlyBudgetPlan(
+          ctx.user.id,
+          input.month,
+          input.plannedAmount
+        );
+      } catch (error) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Unable to save the monthly budget plan",
+        });
+      }
+    }),
   register: protectedProcedure
     .input(
       z.object({

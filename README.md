@@ -8,6 +8,7 @@
 - Seller and affiliate onboarding, product offers, affiliate applications, seller decisions, and internal profile review.
 - Referral redirects, persistent click events, and a privacy-minimal paid-order webhook for seller systems.
 - Seller and affiliate performance dashboards with 7-, 30-, and 90-day views, offer visibility, tracked clicks, and conversion status.
+- Seller monthly USD budget intentions with change history and period-specific commission exposure—no funds are held or reserved.
 - Seller-reviewed commission records and an admin payout desk integrated with **PayPal Payouts**.
 - Encrypted PayPal recipient email storage, exact-cent batch accounting, idempotent batch IDs, explicit admin confirmation, status refresh, PayPal webhook verification, and an audit ledger.
 
@@ -70,6 +71,10 @@ See [`docs/order-webhook-integration.md`](docs/order-webhook-integration.md) for
 ## Activity analytics
 
 The seller studio and affiliate desk provide 7-, 30-, and 90-day performance summaries. Offer views are recorded when at least half of a catalog card is visible; affiliate clicks count tracked referral redirects; reported orders come from seller entry or the seller order webhook and remain pending until the seller reviews them. Confirmed sales include approved, batched, or paid conversion rows. These are counts of recorded events, not unique people or an independent guarantee that every visit/purchase was captured. View events store no visitor identity, IP address, or user-agent. Analytics are retained without automatic expiry. See [`docs/activity-analytics-and-funds-model.md`](docs/activity-analytics-and-funds-model.md) for metric definitions and funding boundaries.
+
+## Seller budget planning
+
+Each seller can set one intended monthly USD budget and review its amount-change history alongside confirmed commission exposure, pending review, and commissions marked paid. Variance compares the plan with recorded commission exposure only. **It is not a cash balance, wallet, escrow, reserve, actual advertising-spend record, or spending cap**; no money is collected, held, reserved, or moved through this feature.
 
 ## Project safety notes
 

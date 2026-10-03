@@ -23,6 +23,7 @@ import {
   AffiliateAnalyticsPanel,
   SellerAnalyticsPanel,
 } from "@/components/AnalyticsPanels";
+import { SellerBudgetPlannerPanel } from "@/components/SellerBudgetPlannerPanel";
 import { SellerWebhookPanel } from "@/components/SellerWebhookPanel";
 import { AffiliatePayPalSettingsPanel } from "@/components/AffiliatePayPalSettingsPanel";
 import { PayPalPayoutAdminPanel } from "@/components/PayPalPayoutAdminPanel";
@@ -1909,6 +1910,7 @@ export default function Home() {
               days={analyticsDays}
               onDaysChange={setAnalyticsDays}
             />
+            <SellerBudgetPlannerPanel />
             <SellerWebhookPanel
               sellerId={seller.id}
               applications={sellerApplications}

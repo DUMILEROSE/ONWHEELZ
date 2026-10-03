@@ -57,6 +57,50 @@ export const sellerOrganizations = mysqlTable(
   })
 );
 
+/** Seller-entered planning targets only; no funds are received, held, or reserved. */
+export const sellerBudgetPlans = mysqlTable(
+  "seller_budget_plans",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    sellerId: int("sellerId")
+      .notNull()
+      .references(() => sellerOrganizations.id, { onDelete: "cascade" }),
+    periodStart: timestamp("periodStart").notNull(),
+    plannedAmount: decimal("plannedAmount", {
+      precision: 12,
+      scale: 2,
+    }).notNull(),
+    currency: varchar("currency", { length: 3 }).default("USD").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => ({
+    sellerPeriodUnique: uniqueIndex(
+      "seller_budget_plans_seller_period_uidx"
+    ).on(table.sellerId, table.periodStart),
+  })
+);
+
+/** Append-only amount history for the seller's intended monthly budget. */
+export const sellerBudgetRevisions = mysqlTable(
+  "seller_budget_revisions",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    planId: int("planId")
+      .notNull()
+      .references(() => sellerBudgetPlans.id, { onDelete: "cascade" }),
+    priorAmount: decimal("priorAmount", { precision: 12, scale: 2 }),
+    newAmount: decimal("newAmount", { precision: 12, scale: 2 }).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => ({
+    planHistory: index("seller_budget_revisions_plan_created_idx").on(
+      table.planId,
+      table.createdAt
+    ),
+  })
+);
+
 /** Flexible catalog for every product, service, vehicle, aircraft, and wheeled good. */
 export const offers = mysqlTable(
   "offers",

@@ -50,6 +50,13 @@
       "when": 1790756819758,
       "tag": "0006_natural_boom_boom",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1791049891443,
+      "tag": "0007_brave_daimon_hellstrom",
+      "breakpoints": true
     }
   ]
 }
